@@ -19,6 +19,7 @@ Options:
   --output <markdown>           Write the generated script to this file
   --validate-only               Validate without reading a key or using network
   --confirm-external            Explicitly authorize one external API request
+  --no-attribution              Omit the local Skill author footer
   --help                        Show this help
 `;
 }
@@ -27,7 +28,7 @@ function parseArgs(argv) {
   const args = {};
   for (let i = 0; i < argv.length; i += 1) {
     const token = argv[i];
-    if (["--validate-only", "--confirm-external", "--help"].includes(token)) {
+    if (["--validate-only", "--confirm-external", "--no-attribution", "--help"].includes(token)) {
       args[token.slice(2)] = true;
       continue;
     }
@@ -179,6 +180,9 @@ async function main() {
   if (!present(apiKey)) throw new Error(`Missing environment variable: ${providerConfig.apiKeyEnv}`);
 
   const mode = await readFile(resolve(SCRIPT_DIR, "../references/live-script-mode.md"), "utf8");
+  const attribution = args["no-attribution"]
+    ? ""
+    : await readFile(resolve(SCRIPT_DIR, "../assets/attribution.md"), "utf8");
   const controller = new AbortController();
   const timeoutMs = Number(config.requestTimeoutMs) || 120000;
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -207,12 +211,13 @@ async function main() {
 
   const content = payload?.choices?.[0]?.message?.content;
   if (!present(content)) throw new Error("Provider response did not contain generated content");
+  const output = content.trim() + (attribution ? "\n\n" + attribution.trim() : "") + "\n";
   if (args.output) {
     const outputPath = resolve(args.output);
-    await writeFile(outputPath, content.trim() + "\n", { encoding: "utf8", flag: "wx" });
+    await writeFile(outputPath, output, { encoding: "utf8", flag: "wx" });
     process.stdout.write(`Generated script written to ${outputPath}\n`);
   } else {
-    process.stdout.write(content.trim() + "\n");
+    process.stdout.write(output);
   }
 }
 

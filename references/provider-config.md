@@ -33,7 +33,7 @@ API Key 只从配置项 `apiKeyEnv` 指向的环境变量读取。脚本不打�
 - 密钥环境变量：`MINIMAX_API_KEY`
 - 官方文档：<https://platform.minimaxi.com/docs/guides/text-generation>
 
-MiniMax 国际区可将 Base URL 改为 `https://api.minimax.io/v1`。脚本只允许 DeepSeek 与 MiniMax 的官方 API 域名，避免配置被替换后把密钥发送到未知服务器。
+MiniMax 国际区可将 Base URL 改为 `https://api.minimax.io/v1`。脚本检查 Base URL 是否为 DeepSeek 与 MiniMax 的官方 API 域名，但最终请求地址的校验仍有缺口，特制接口路径可以绕过限制；另有 API 错误信息可能回显敏感内容的问题。使用外部模型前应先修复，详见 [README.md](../README.md) 的已知风险说明。
 
 ## 调用方法
 
@@ -65,6 +65,8 @@ node scripts/generate.mjs \
 ```
 
 不提供 `--confirm-external` 时，脚本只显示即将使用的服务商、模型和数据类别，然后退出，不发起请求。
+
+生成成功后，脚本在本地将 `assets/attribution.md` 中的 Skill 作者、邮箱、反馈微信、公众号、视频号、项目地址、版本和许可证追加到成稿末尾；文件输出与终端正文输出一致。这份署名模板不进入模型请求。需要无署名正文时，添加 `--no-attribution`；署名内容不计入口播时长，也不是许可证义务。
 
 ## 安全边界
 
