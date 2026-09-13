@@ -1,0 +1,8 @@
+interface:
+  display_name: "JK 直播口播生成器"
+  short_description: "玩AI的杰克直播信息采集与20至30分钟转化口播生成"
+  brand_color: "#C96F4A"
+  default_prompt: "使用 $jk-live-script-generator 通过交互收集直播信息，并生成一份约25分钟的口播稿。"
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,22 @@
+{
+  "provider": "deepseek",
+  "requestTimeoutMs": 120000,
+  "providers": {
+    "deepseek": {
+      "baseUrl": "https://api.deepseek.com",
+      "endpoint": "/chat/completions",
+      "model": "deepseek-v4-flash",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "temperature": 0.8,
+      "maxCompletionTokens": 7000
+    },
+    "minimax": {
+      "baseUrl": "https://api.minimaxi.com/v1",
+      "endpoint": "/chat/completions",
+      "model": "MiniMax-M2.7",
+      "apiKeyEnv": "MINIMAX_API_KEY",
+      "temperature": 1.0,
+      "maxCompletionTokens": 7000
+    }
+  }
+}

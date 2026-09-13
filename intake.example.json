@@ -1,0 +1,56 @@
+{
+  "accountPositioning": {
+    "accountName": "示例账号（请替换）",
+    "oneSentencePositioning": "用真实经验帮助目标用户解决一个明确问题",
+    "credibleExperience": [
+      "一项与本场主题直接相关、允许公开的真实经历"
+    ],
+    "voice": "专业、自然、克制",
+    "contentPromise": "讲清方法、适用条件和检查方式",
+    "prohibitedClaims": [
+      "不承诺流量、销量和收入"
+    ]
+  },
+  "product": {
+    "name": "示例产品（请替换）",
+    "type": "资料包、课程、咨询或实体商品",
+    "price": "待确认",
+    "deliverables": [
+      "一项真实存在且可独立交付的内容"
+    ],
+    "paymentOwner": "待确认",
+    "deliveryOwner": "待确认",
+    "serviceBoundary": "待确认",
+    "purchaseEntry": "待确认"
+  },
+  "industry": {
+    "primary": "示例行业（请替换）",
+    "coverage": [
+      "本场明确覆盖的问题"
+    ],
+    "excluded": [
+      "本场不讨论的范围"
+    ],
+    "complianceNotes": []
+  },
+  "audience": {
+    "primary": "示例目标用户（请替换）",
+    "stage": "正在经历该问题的具体阶段",
+    "topPains": [
+      "一个可观察、可描述的具体痛点"
+    ],
+    "objections": [
+      "一个真实购买或行动顾虑"
+    ],
+    "desiredAction": "看完后希望采取的一个动作"
+  },
+  "live": {
+    "platform": "视频号",
+    "topic": "本场只讲一个问题",
+    "goal": "完成一次方法演示并验证用户需求",
+    "durationMinutes": 25,
+    "demo": "脱敏材料、虚构教学样例或真实商品展示",
+    "callToAction": "查看已核实的商品说明或预约下一场",
+    "speakingRateCharsPerMinute": 180
+  }
+}
