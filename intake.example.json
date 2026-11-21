@@ -12,6 +12,7 @@
     ]
   },
   "product": {
+    "verified": false,
     "name": "示例产品（请替换）",
     "type": "资料包、课程、咨询或实体商品",
     "price": "待确认",
@@ -50,7 +51,7 @@
     "goal": "完成一次方法演示并验证用户需求",
     "durationMinutes": 25,
     "demo": "脱敏材料、虚构教学样例或真实商品展示",
-    "callToAction": "查看已核实的商品说明或预约下一场",
+    "callToAction": "预约下一场直播",
     "speakingRateCharsPerMinute": 180
   }
 }

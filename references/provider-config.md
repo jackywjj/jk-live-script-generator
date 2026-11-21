@@ -11,7 +11,7 @@
 | `intake.example.json` | 账号、产品、行业、用户群和本场参数示例 | 不可以写客户隐私或企业机密 |
 | `config.local.json` | 用户自行复制的本机配置，可改模型参数 | 不可以，已加入忽略规则 |
 
-API Key 只从配置项 `apiKeyEnv` 指向的环境变量读取。脚本不打印请求头、密钥或完整 API 错误响应。
+API Key 只从配置项 `apiKeyEnv` 指向的环境变量读取。HTTP 请求失败时仅显示状态码，网络和响应解析失败时使用固定提示。
 
 ## 当前支持
 
@@ -33,9 +33,13 @@ API Key 只从配置项 `apiKeyEnv` 指向的环境变量读取。脚本不打�
 - 密钥环境变量：`MINIMAX_API_KEY`
 - 官方文档：<https://platform.minimaxi.com/docs/guides/text-generation>
 
-MiniMax 国际区可将 Base URL 改为 `https://api.minimax.io/v1`。脚本检查 Base URL 是否为 DeepSeek 与 MiniMax 的官方 API 域名，但最终请求地址的校验仍有缺口，特制接口路径可以绕过限制；另有 API 错误信息可能回显敏感内容的问题。使用外部模型前应先修复，详见 [README.md](../README.md) 的已知风险说明。
+MiniMax 国际区可将 Base URL 改为 `https://api.minimax.io/v1`。Base URL 必须使用所选服务商的官方 HTTPS 域名和默认端口。最终请求地址必须使用相同的协议、域名和端口。两处地址都禁止内嵌用户名或密码，请求禁止跟随重定向。
 
 ## 调用方法
+
+采集 JSON 可以省略 `product` 或将其设为 `null`。商品尚待核实时也可以只填写已有资料，`verified` 设为 `false` 或省略。CLI 会省略商品资料，并要求模型只写纯内容或预约下一场，禁止购买引导。这时可用 `live.callToAction` 指定“预约下一场直播”。省略它时默认以免费内容练习收口。
+
+需要生成带商品承接的稿子时，请在核实商品名、类型、价格、交付物、购买入口、收款方、交付方和服务边界后，填写对应的商品字段并将 `product.verified` 设为布尔值 `true`。同时填写 `live.callToAction`。商品字段仍有缺项或“待确认”等占位值时，CLI 会按纯内容或预约下一场处理。
 
 先复制配置并在当前终端设置密钥：
 
@@ -65,6 +69,8 @@ node scripts/generate.mjs \
 ```
 
 不提供 `--confirm-external` 时，脚本只显示即将使用的服务商、模型和数据类别，然后退出，不发起请求。
+
+运行 `node --test scripts/generate.test.mjs` 可离线验证商品资料处理、地址检查、请求确认和错误输出。
 
 生成成功后，脚本在本地将 `assets/attribution.md` 中的 Skill 作者、邮箱、反馈微信、公众号、视频号、项目地址、版本和许可证追加到成稿末尾；文件输出与终端正文输出一致。这份署名模板不进入模型请求。需要无署名正文时，添加 `--no-attribution`；署名内容不计入口播时长，也不是许可证义务。
 
