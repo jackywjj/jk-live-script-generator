@@ -101,7 +101,7 @@ ZIP 或安装器复制安装：先将旧目录改名备份，再安装新版，�
 
 ## 可选外部模型
 
-外部脚本使用 Node.js 内置模块，无需 `npm install`；本机需支持内置 `fetch` 的 Node.js 环境。配置和离线校验命令见 [外部模型说明](references/provider-config.md)。`.env.example` 只是变量名称示例，脚本不会自动读取 `.env`。
+外部脚本支持 DeepSeek、Kimi、千问和 MiniMax，通过 `--provider deepseek|kimi|qwen|minimax` 选择其中一个。脚本使用 Node.js 内置模块，无需 `npm install`；本机需支持内置 `fetch` 的 Node.js 环境。配置和离线校验命令见 [外部模型说明](references/provider-config.md)。`.env.example` 只是变量名称示例，脚本不会自动读取 `.env`。
 
 外部脚本只向所选服务商的官方 HTTPS 地址发起请求，使用默认端口并禁止跟随重定向。HTTP 请求失败时仅显示状态码。默认由 Codex 直接生成时无需运行外部脚本。
 

@@ -24,6 +24,8 @@ after(() => {
 
 const deepseekUrl = "https://api.deepseek.com/chat/completions";
 const secret = "fake-key-for-offline-test";
+const kimiKey = "fake-moonshot-key";
+const qwenKey = "fake-dashscope-key";
 const privateIntake = "fake-private-intake-for-offline-test";
 
 // Replace fetch before importing the CLI, so a mismatch can never reach the network.
@@ -44,13 +46,20 @@ const bootstrap = `
       process.stderr.write("Unexpected fetch call or options\\n");
       process.exit(99);
     }
-    if (reply.expectedIntake) {
-      const { messages: [instructions, data] } = JSON.parse(options.body);
+    if (reply.expectedRequest || reply.expectedIntake) {
+      const { messages: [instructions, data], ...parameters } = JSON.parse(options.body);
       assert.equal(instructions.role, "system");
-      for (const instruction of reply.expectedInstructions) {
+      assert.equal(data.role, "user");
+      if (reply.expectedRequest) {
+        assert.deepEqual(parameters, reply.expectedRequest);
+        assert.equal(options.headers.Authorization, "Bearer " + reply.expectedKey);
+      }
+      for (const instruction of reply.expectedInstructions ?? []) {
         assert.ok(instructions.content.includes(instruction));
       }
-      assert.deepEqual(JSON.parse(data.content.slice(data.content.indexOf("\\n") + 1)), reply.expectedIntake);
+      if (reply.expectedIntake) {
+        assert.deepEqual(JSON.parse(data.content.slice(data.content.indexOf("\\n") + 1)), reply.expectedIntake);
+      }
     }
     if (reply.failure) throw new Error(reply.failure);
     return new Response(reply.body, { status: reply.status, headers: reply.headers });
@@ -65,7 +74,12 @@ function run(args, { configPath = configExample, intakePath = intakeExample, rep
     "--config", configPath, "--intake", intakePath, ...args,
   ], {
     encoding: "utf8",
-    env: { DEEPSEEK_API_KEY: secret, MINIMAX_API_KEY: secret },
+    env: {
+      DEEPSEEK_API_KEY: secret,
+      MINIMAX_API_KEY: secret,
+      MOONSHOT_API_KEY: kimiKey,
+      DASHSCOPE_API_KEY: qwenKey,
+    },
     timeout: 5000,
   });
   assert.ifError(result.error);
@@ -104,6 +118,19 @@ test("rejects unapproved origins and embedded credentials before fetch", () => {
     const result = run(["--confirm-external"], { configPath: writeConfig("deepseek", baseUrl) });
     assert.equal(result.status, 1, result.stderr);
     assert.equal(result.stderr, "Error: Unapproved deepseek API origin\n");
+  }
+});
+
+test("rejects switching Kimi or Qwen to the other provider's host", () => {
+  for (const [provider, baseUrl] of [
+    ["kimi", "https://dashscope.aliyuncs.com"],
+    ["qwen", "https://api.moonshot.cn"],
+  ]) {
+    const result = run(["--confirm-external", "--provider", provider], {
+      configPath: writeConfig(provider, baseUrl),
+    });
+    assert.equal(result.status, 1, result.stderr);
+    assert.equal(result.stderr, `Error: Unapproved ${provider} API origin\n`);
   }
 });
 
@@ -168,6 +195,39 @@ test("prints a successful response and appends the local attribution", () => {
   assert.match(result.stdout, /^离线口播示例\n\n---/);
   assert.match(result.stdout, /Skill 作者与联系信息/);
 });
+
+for (const [provider, url, key, parameters] of [
+  ["deepseek", deepseekUrl, secret, { model: "deepseek-flash", temperature: 0.8, max_tokens: 7000 }],
+  ["kimi", "https://api.moonshot.cn/v1/chat/completions", kimiKey, {
+    model: "kimi-k2.6", max_completion_tokens: 7000, thinking: { type: "disabled" },
+  }],
+  ["qwen", "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions", qwenKey, {
+    model: "qwen-plus", temperature: 0.8, max_tokens: 7000,
+  }],
+  ["minimax", "https://api.minimaxi.com/v1/chat/completions", secret, {
+    model: "MiniMax-M2.7", temperature: 1, max_completion_tokens: 7000,
+  }],
+]) {
+  test(`selects the ${provider} endpoint, credentials, and request fields`, () => {
+    const args = ["--provider", provider];
+    const preview = run([...args, "--validate-only"]);
+    assert.equal(preview.status, 0, preview.stderr);
+    assert.equal(JSON.parse(preview.stdout).endpoint, url);
+    assert.equal(JSON.parse(preview.stdout).model, parameters.model);
+
+    const result = run([...args, "--confirm-external", "--no-attribution"], {
+      reply: {
+        url,
+        status: 200,
+        expectedRequest: { ...parameters, stream: false },
+        expectedKey: key,
+        body: JSON.stringify({ choices: [{ message: { content: "离线口播示例" } }] }),
+      },
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.stdout, "离线口播示例\n");
+  });
+}
 
 const verifiedProduct = {
   verified: true,

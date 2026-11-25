@@ -7,15 +7,18 @@ import { fileURLToPath } from "node:url";
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ALLOWED_ORIGINS = {
   deepseek: new Set(["https://api.deepseek.com"]),
+  kimi: new Set(["https://api.moonshot.cn"]),
+  qwen: new Set(["https://dashscope.aliyuncs.com"]),
   minimax: new Set(["https://api.minimaxi.com", "https://api.minimax.io"]),
 };
+const PROVIDER_NAMES = Object.keys(ALLOWED_ORIGINS);
 
 function usage() {
   return `Usage:
   node scripts/generate.mjs --config <json> --intake <json> [options]
 
 Options:
-  --provider <deepseek|minimax>  Override config provider
+  --provider <${PROVIDER_NAMES.join("|")}>  Override config provider
   --output <markdown>           Write the generated script to this file
   --validate-only               Validate without reading a key or using network
   --confirm-external            Explicitly authorize one external API request
@@ -95,7 +98,7 @@ function validateIntake(intake, productVerified) {
 function validateProvider(config, requestedProvider) {
   const provider = requestedProvider || config.provider;
   if (!Object.hasOwn(ALLOWED_ORIGINS, provider)) {
-    throw new Error("Provider must be deepseek or minimax");
+    throw new Error(`Provider must be one of: ${PROVIDER_NAMES.join(", ")}`);
   }
   const providerConfig = config?.providers?.[provider];
   if (!providerConfig) throw new Error(`Provider configuration not found: ${provider}`);
@@ -145,12 +148,15 @@ function buildRequest(provider, providerConfig, mode, intake, productVerified) {
       { role: "user", content: user },
     ],
     stream: false,
-    temperature: providerConfig.temperature,
+    temperature: provider === "kimi" ? undefined : providerConfig.temperature,
   };
-  if (provider === "minimax") {
+  if (provider === "minimax" || provider === "kimi") {
     body.max_completion_tokens = providerConfig.maxCompletionTokens;
   } else {
     body.max_tokens = providerConfig.maxCompletionTokens;
+  }
+  if (provider === "kimi" && providerConfig.model === "kimi-k2.6") {
+    body.thinking = { type: "disabled" };
   }
   return body;
 }

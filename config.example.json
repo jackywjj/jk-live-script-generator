@@ -5,8 +5,23 @@
     "deepseek": {
       "baseUrl": "https://api.deepseek.com",
       "endpoint": "/chat/completions",
-      "model": "deepseek-v4-flash",
+      "model": "deepseek-flash",
       "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "temperature": 0.8,
+      "maxCompletionTokens": 7000
+    },
+    "kimi": {
+      "baseUrl": "https://api.moonshot.cn/v1",
+      "endpoint": "/chat/completions",
+      "model": "kimi-k2.6",
+      "apiKeyEnv": "MOONSHOT_API_KEY",
+      "maxCompletionTokens": 7000
+    },
+    "qwen": {
+      "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "endpoint": "/chat/completions",
+      "model": "qwen-plus",
+      "apiKeyEnv": "DASHSCOPE_API_KEY",
       "temperature": 0.8,
       "maxCompletionTokens": 7000
     },

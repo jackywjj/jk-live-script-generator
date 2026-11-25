@@ -65,7 +65,7 @@ metadata:
 1. 读取 [references/live-script-mode.md](references/live-script-mode.md)。
 2. 完成交互采集，将结果整理成简短确认单；事实、建议和待确认项分开。确认本场围绕的一个核心问题，以及“问题 → 免费方法 → 真实产品交付物 → 下一步”的对应关系。已有资料足够时直接整理，不重复询问；多个痛点应属于同一主线，不能拼成几场互不相关的直播。
 3. 用户未要求外部模型时，直接由当前 Codex 生成。
-4. 用户明确选择 DeepSeek 或 MiniMax 时，先读取 [references/provider-config.md](references/provider-config.md)，展示将发送的数据类别、服务商和模型，再取得本次调用确认。
+4. 用户明确选择 DeepSeek、Kimi、千问或 MiniMax 时，先读取 [references/provider-config.md](references/provider-config.md)，展示将发送的数据类别、服务商和模型，再取得本次调用确认。
 5. 按参考模式生成围绕同一核心问题的多轮讲解：痛点 → 归因 → 情绪承接 → 专业证据 → 可信愿景 → 方法／演示 → 产品承接 → 回环。顺序可为自然口语调整，每轮增加新的场景、证据或异议回应；产品未确认或不适配时，以内容练习或预约下一场替代购买引导。
 6. 检查每轮能否让新观众独立听懂、给老观众新增价值，以及产品交付物是否对应刚才的方法；随后检查总时长、事实、互动质量和平台风险。
 
@@ -96,7 +96,7 @@ Skill 作者：玩AI的杰克；作者邮箱：ecstorm@gmail.com；反馈微信�
 
 Skill 项目提供以下配置和工具：
 
-- `config.example.json`：DeepSeek、MiniMax 的模型和接口配置，不含密钥。
+- `config.example.json`：DeepSeek、Kimi、千问和 MiniMax 的模型和接口配置，不含密钥。
 - `.env.example`：密钥环境变量名称示例。
 - `intake.example.json`：结构化采集结果示例。
 - `scripts/generate.mjs`：可选的外部模型生成器；没有 `--confirm-external` 时不会发起网络请求。
